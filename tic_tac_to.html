@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            text-align: center;
+        }
+        #game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 5px;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            cursor: pointer;
+            border: 2px solid #333;
+        }
+        .cell:hover {
+            background-color: #e0e0e0;
+        }
+        #status {
+            margin-top: 20px;
+            text-align: center;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>Tic-Tac-Toe Game</h1>
+        <div id="game-board"></div>
+        <div id="status"></div>
+        <button onclick="resetGame()">Reset Game</button>
+    </div>
+
+    <script>
+        // JavaScript code to handle the game logic
+        const board = ["", "", "", "", "", "", "", "", ""];
+        let currentPlayer = "X";
+        let isGameActive = true;
+
+        const winningCombinations = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+
+        const gameBoard = document.getElementById("game-board");
+        const statusDisplay = document.getElementById("status");
+
+        function createBoard() {
+            gameBoard.innerHTML = "";
+            board.forEach((cell, index) => {
+                const cellElement = document.createElement("div");
+                cellElement.classList.add("cell");
+                cellElement.setAttribute("data-index", index);
+                cellElement.addEventListener("click", handleCellClick);
+                cellElement.textContent = cell;
+                gameBoard.appendChild(cellElement);
+            });
+        }
+
+        function handleCellClick(event) {
+            const index = event.target.getAttribute("data-index");
+
+            if (board[index] !== "" || !isGameActive) {
+                return;
+            }
+
+            board[index] = currentPlayer;
+            event.target.textContent = currentPlayer;
+
+            if (checkWinner()) {
+                statusDisplay.textContent = `Player ${currentPlayer} wins! 🎉`;
+                isGameActive = false;
+            } else if (board.includes("")) {
+                currentPlayer = currentPlayer === "X" ? "O" : "X";
+                statusDisplay.textContent = `Player ${currentPlayer}'s turn`;
+            } else {
+                statusDisplay.textContent = "It's a draw! 🤝";
+                isGameActive = false;
+            }
+        }
+
+        function checkWinner() {
+            return winningCombinations.some(combination => {
+                return combination.every(index => board[index] === currentPlayer);
+            });
+        }
+
+        function resetGame() {
+            board.fill("");
+            currentPlayer = "X";
+            isGameActive = true;
+            statusDisplay.textContent = `Player ${currentPlayer}'s turn`;
+            createBoard();
+        }
+
+        // Initialize the game board when the page loads
+        window.onload = () => {
+            createBoard();
+            statusDisplay.textContent = `Player ${currentPlayer}'s turn`;
+        };
+    </script>
+</body>
+</html>
